@@ -1,0 +1,45 @@
+.section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    font-size: 12px;
+    font-weight: 600;
+    color: #60a5fa;
+
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+
+    margin-bottom: 16px;
+}
+
+.section-line {
+    width: 16px;
+    height: 1px;
+    background-color: #60a5fa;
+    flex-shrink: 0;
+}
+
+.gray-title {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.blue-title {
+    background-image: linear-gradient(to bottom right,
+            #93c5fd,
+            #60a5fa,
+            #2563eb);
+
+    font-family: serif;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+}
+
+.section-heading {
+    font-family: serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+}
