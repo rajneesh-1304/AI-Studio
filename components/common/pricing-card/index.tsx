@@ -1,8 +1,9 @@
+
 import React from 'react';
 import './style.scss';
 import { Button } from '@/components/ui/button';
-import { BlueTitle } from '@/components/reusables/reusable';
-import { Check } from 'lucide-react';
+import { BlueTitle, GrayTitle } from '@/components/reusables/reusable';
+import { Check, ArrowRight } from 'lucide-react';
 
 interface PricingPlan {
     key: string;
@@ -20,49 +21,86 @@ interface PricingProps {
 }
 
 const PricingCard = ({ pricingProps }: PricingProps) => {
-    const { key, label, description, price, featured, planId, active, features } = pricingProps;
+    const {
+        label,
+        description,
+        price,
+        featured,
+        active,
+        features
+    } = pricingProps;
+
     return (
-        <div className='card'>
-            <div className="">
+        <div className={`pricing-card ${featured ? 'pricing-card-featured' : ''}`}>
 
-            </div>
-
-            <div className='pricing'>
-                <div className='pricing-label'>
-                    <p className='label'>{label}</p>
-                    {active && <span className='active-btn'>Active</span>}
+            {featured && (
+                <div className="pricing-popular-wrapper">
+                    <span className="pricing-popular-badge">
+                        Most popular
+                    </span>
                 </div>
-                <p  className='description'>{description}</p>
+            )}
+
+            <div className="pricing-card-header">
+                <p className="pricing-card-label">{label}</p>
+
+                {active && (
+                    <span className="pricing-active-badge">
+                        Active
+                    </span>
+                )}
             </div>
 
-            <div>
-                <BlueTitle>${price}</BlueTitle>
-                <span>{price > 0 && ' /mo'}</span>
-                <p>{price === 0 ? "Always free" : "Only billed monthly"}</p>
+            <p className="pricing-card-description">
+                {description}
+            </p>
+
+            <div className="pricing-card-price">
+                <div className="pricing-card-price-value">
+                    {price === 0 ? (
+                        <GrayTitle>$0</GrayTitle>
+                    ) : (
+                        <BlueTitle>${price}</BlueTitle>
+                    )}
+                </div>
+
+                {price > 0 && (
+                    <span className="pricing-card-period">/mo</span>
+                )}
             </div>
 
-            <div>
-                {
-                    features.map((feature) => (
-                        <div>
-                            <div className='inline-flex'>
-                                <Check />
-                                <p>{feature}</p>
-                            </div>
+            <p className="pricing-card-billing">
+                {price === 0 ? 'Always free' : 'Only billed monthly'}
+            </p>
+
+            <div className="pricing-card-features">
+                {features.map((feature) => (
+                    <div className="pricing-feature-row" key={feature}>
+                        <div className={`pricing-feature-icon-wrapper ${featured ? 'pricing-feature-icon-blue' : 'pricing-feature-icon-gray'}`}>
+                            <Check className="pricing-feature-icon" />
                         </div>
-                    ))
-                }
+
+                        <span className="pricing-feature-name">
+                            {feature}
+                        </span>
+                    </div>
+                ))}
             </div>
 
-            <Button disabled={active}>
-                {active ?
-                    "Current Plan" :
-                    "Get Started"
-                }
+            <Button
+                disabled={active}
+                className={`pricing-card-button ${featured ? 'pricing-card-button-featured' : ''}`}
+                variant="ghost"
+            >
+                {active ? '✓ Current plan' : 'Get started'}
+
+                {!active && (
+                    <ArrowRight className="pricing-card-arrow" />
+                )}
             </Button>
 
         </div>
-    )
-}
+    );
+};
 
-export default PricingCard
+export default PricingCard;

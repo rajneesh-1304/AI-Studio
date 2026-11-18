@@ -1,0 +1,26 @@
+.hero {
+    min-height: 100vh;
+    position: relative;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 6rem;
+    padding-top: 10rem;
+}
+
+.holeBackground{
+    backdrop-filter: blur(60px);
+    z-index: -10;
+}
+
+.hero-heading{
+    padding: 0 8px;
+    border: 1px solid black;
+    border-radius: 16px;
+}
+
+.hero-container{
+    max-width: 64rem;
+    margin: 0px auto;
+    text-align: center;
+    z-index: 10;
+}

@@ -19,7 +19,7 @@ const Pricing = () => {
                 <p className='pricing-wrapper'>No credit card required. Upgrade or downgrade anytime.</p>
             </div>
 
-            <div>
+            <div className='pricing-plan'>
                 {PRICING_PLANS.map((plan) => (
                     <PricingCard key={plan.key} pricingProps={plan}/>
                 ))} 
