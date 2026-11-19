@@ -42,7 +42,7 @@ export const PRICING_PLANS = [
     description: "Everything you need to turn ideas into working applications.",
     price: 9,
     featured: true,
-    planId: "cplan_3DvxGsOeYA5bpJzGWPi8o7wScRD",
+    planId: "cplan_3MJS0Ran1ikPGxXFfFTcHmuuY79",
     active: false,
     features: [
       "50 AI generations per month",
@@ -58,7 +58,7 @@ export const PRICING_PLANS = [
     description: "Advanced capabilities for developers building and shipping faster.",
     price: 29,
     featured: false,
-    planId: "cplan_3DvxTfywwB0NyQ1iqANclgNqlq8",
+    planId: "cplan_3MJSGaC9AarfYCLEJNaPmQ4CqiZ",
     active: false,
     features: [
       "150 AI generations per month",

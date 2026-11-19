@@ -1,34 +1,35 @@
-
 .pricing-section {
     padding: 0 16px 128px;
 }
 
-.pricing-heading {
-    max-width: 64rem;
+.heading {
+    max-width: 1024px;
     margin: 0 auto 56px;
     text-align: center;
 }
 
-.pricing-subtitle {
-    max-width: 24rem;
+.pricing-wrapper {
+    max-width: 384px;
     margin: 16px auto 0;
-
-    color: rgba(255, 255, 255, 0.35);
     font-size: 14px;
+    color: rgba(255, 255, 255, 0.35);
 }
 
 .pricing-plan {
+    max-width: 1024px;
+    margin: 0 auto;
+
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-
     gap: 16px;
-
-    max-width: 64rem;
-    margin: 0 auto;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .pricing-plan {
         grid-template-columns: 1fr;
+    }
+
+    .heading {
+        margin-bottom: 40px;
     }
 }

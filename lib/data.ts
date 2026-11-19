@@ -2,14 +2,13 @@
 import { Sparkles, Zap, Code2, Eye, Package, ImageIcon } from "lucide-react";
 
 export const SUGGESTIONS = [
-  "Build a modern SaaS analytics dashboard with interactive charts",
-  "Create a project management app with tasks and team collaboration",
-  "Design an AI-powered chatbot with a clean messaging interface",
-  "Build an e-commerce dashboard with product and order management",
-  "Create a fitness tracker with activity charts and daily goals",
-  "Design a modern CRM dashboard with customer insights",
+    "Build a SaaS analytics dashboard",
+    "Create a project management app",
+    "Design an AI chatbot interface",
+    "Build an e-commerce dashboard",
+    "Create a fitness tracking app",
+    "Design a modern CRM dashboard",
 ];
-
 export const FEATURES = [
   {
     icon: Zap,

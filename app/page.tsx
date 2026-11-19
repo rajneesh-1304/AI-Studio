@@ -8,11 +8,13 @@ import Pricing from "@/components/home/pricing";
 import Hero from "@/components/home/hero";
 import Footer from "@/components/home/footer";
 import CTA from "@/components/home/cta";
+import MockUp from "@/components/home/mockup";
 
 export default function Home() {
   return (
     <main className="main-container">
       <Hero/>
+      <MockUp />
       <Features />
       <Works />
       <Pricing />
