@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner";
 import Header from "@/components/header";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Suspense } from "react";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -46,8 +47,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             enableSystem
             disableTransitionOnChange
           >
-            <Header />
-            <main>
+            <Suspense fallback={<div>Loading header...</div>}>
+              <Header />
+            </Suspense>
+            <main>  
               {children}
             </main>
             <Toaster richColors />

@@ -1,0 +1,30 @@
+.workspace-container {
+    width: 100%;
+}
+
+.workspace-mobile-view {
+    display: block;
+}
+
+.workspace-desktop-view {
+    display: none;
+    height: calc(100vh - 4rem);
+    overflow: hidden;
+    background-color: #0a0a0a;
+}
+
+.workspace-divider {
+    width: 1px;
+    flex-shrink: 0;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+@media (min-width: 768px) {
+    .workspace-mobile-view {
+        display: none;
+    }
+
+    .workspace-desktop-view {
+        display: flex;
+    }
+}

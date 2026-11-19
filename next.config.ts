@@ -7,6 +7,13 @@ const nextConfig: NextConfig = {
   },
   cacheComponents: true,
   partialPrefetching: true,
+  serverExternalPackages: [
+    "@cline/sdk",
+    "@cline/core",
+    "@cline/agents",
+    "@cline/llms",
+    "@cline/shared",
+  ],
   turbopack: {
     rules: {
       "*.css": {
@@ -18,3 +25,4 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+

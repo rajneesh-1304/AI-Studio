@@ -2,13 +2,14 @@ import React from 'react'
 import './style.scss'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Show, SignInButton } from '@clerk/nextjs'
+import { Show, SignInButton, UserButton } from '@clerk/nextjs'
 import { Button } from '../ui/button'
 import { ArrowRight, Zap } from 'lucide-react'
 import { PricingModal } from '../common/pricing-modal'
+import { checkUser } from '@/lib/checkUser'
 
 const Header = async () => {
-    // const user = await checkUser();
+    const user = await checkUser();
     return (
         <header className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-white/6 bg-white/7 backdrop-blur-md">
             <nav className="navbar">
@@ -29,15 +30,17 @@ const Header = async () => {
                         </Link>
 
                         {
-                        // user && (
-                            <PricingModal>
-                                <span className="inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 text-xs text-white/70">
-                                    <Zap className="h-3 w-3 fill-white/70" />
-                                    {/* {user.credits} credits */}
-                                </span>
-                            </PricingModal>
-                        // )
+                            user && (
+                                <PricingModal>
+                                    <span className="inline-flex h-8 items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 text-xs text-white/70">
+                                        <Zap className="h-3 w-3 fill-white/70" />
+                                        {user.credits} credits
+                                    </span>
+                                </PricingModal>
+                            )
                         }
+                        
+                        <UserButton />
                     </Show>
 
                     <Show when="signed-out">
