@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
     "@cline/agents",
     "@cline/llms",
     "@cline/shared",
+    "@prisma/client", 
+    "prisma"
   ],
   turbopack: {
     rules: {
