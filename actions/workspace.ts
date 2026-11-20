@@ -6,8 +6,6 @@ import { db } from "@/lib/prisma";
 import { checkUser } from "@/lib/checkUser";
 import { WorkspaceData, WorkspaceUser } from "@/types/workspace";
 
-// ─── Get the current authenticated user ──────────────────────────────────────
-
 export async function getWorkspaceUser(): Promise<WorkspaceUser> {
   const user = await checkUser();
   if (!user) redirect("/");
@@ -18,8 +16,6 @@ export async function getWorkspaceUser(): Promise<WorkspaceUser> {
     plan: user.plan,
   };
 }
-
-// ─── Get a workspace by id (must belong to the current user) ─────────────────
 
 export async function getWorkspaceById(
   workspaceId: string,
@@ -39,8 +35,6 @@ export async function getWorkspaceById(
 
   return workspace;
 }
-
-// ─── Export a workspace by id (must belong to the current user) ──────────────
 
 export async function exportWorkspace(
   workspaceId: string,

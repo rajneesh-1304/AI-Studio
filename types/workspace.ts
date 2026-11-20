@@ -1,5 +1,3 @@
-// ─── Workspace & Chat Types ───────────────────────────────────────────────────
-
 export type MessageRole = "user" | "assistant";
 
 export interface Message {

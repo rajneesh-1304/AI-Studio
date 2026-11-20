@@ -11,7 +11,6 @@ const MockUp = () => {
         <section className="previewSection">
             <div className="browser">
 
-                {/* Browser header */}
                 <div className="browserHeader">
                     <div className="browserDots">
                         <span></span>
@@ -24,10 +23,8 @@ const MockUp = () => {
                     </div>
                 </div>
 
-                {/* Browser content */}
                 <div className="browserContent">
 
-                    {/* Chat panel */}
                     <div className="chatPanel">
 
                         <div className="chatHeader">
@@ -36,14 +33,12 @@ const MockUp = () => {
 
                         <div className="chatMessages">
 
-                            {/* User message */}
                             <div className="userMessageWrapper">
                                 <div className="userMessage">
                                     Build a kanban board with 3 columns and drag-and-drop
                                 </div>
                             </div>
 
-                            {/* AI message */}
                             <div className="aiMessageWrapper">
                                 <div className="aiIcon">
                                     <Zap />
@@ -57,7 +52,6 @@ const MockUp = () => {
                                 </div>
                             </div>
 
-                            {/* AI loading */}
                             <div className="aiMessageWrapper">
                                 <div className="aiIcon">
                                     <Zap />
@@ -72,7 +66,6 @@ const MockUp = () => {
 
                         </div>
 
-                        {/* Chat input */}
                         <div className="chatFooter">
                             <div className="chatInput">
                                 <span>Ask AI to modify…</span>
@@ -81,16 +74,13 @@ const MockUp = () => {
                         </div>
                     </div>
 
-                    {/* Preview panel */}
                     <div className="previewPanel">
 
-                        {/* Tabs */}
                         <div className="previewTabs">
                             <button className="activeTab">Preview</button>
                             <button>Code</button>
                         </div>
 
-                        {/* Kanban board */}
                         <div className="kanbanBoard">
 
                             {columns.map((column, columnIndex) => (

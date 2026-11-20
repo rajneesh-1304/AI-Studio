@@ -47,7 +47,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             enableSystem
             disableTransitionOnChange
           >
-            <Suspense fallback={<div>Loading header...</div>}>
+            <Suspense fallback={<div className="w-full h-16" />}>
               <Header />
             </Suspense>
             <main>  

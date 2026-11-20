@@ -1,5 +1,3 @@
-// ─── Project Types ────────────────────────────────────────────────────────────
-
 export interface ProjectSummary {
   id: string;
   title: string | null;

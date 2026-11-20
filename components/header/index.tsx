@@ -1,15 +1,16 @@
-import React from 'react'
 import './style.scss'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Show, SignInButton, UserButton } from '@clerk/nextjs'
+import { Show, SignInButton } from '@clerk/nextjs'
 import { Button } from '../ui/button'
 import { ArrowRight, Zap } from 'lucide-react'
 import { PricingModal } from '../common/pricing-modal'
 import { checkUser } from '@/lib/checkUser'
+import { HeaderUserButton } from './user-button'
 
 const Header = async () => {
     const user = await checkUser();
+
     return (
         <header className="fixed top-0 left-0 right-0 z-50 h-16 border-b border-white/6 bg-white/7 backdrop-blur-md">
             <nav className="navbar">
@@ -39,8 +40,8 @@ const Header = async () => {
                                 </PricingModal>
                             )
                         }
-                        
-                        <UserButton />
+
+                        <HeaderUserButton />
                     </Show>
 
                     <Show when="signed-out">

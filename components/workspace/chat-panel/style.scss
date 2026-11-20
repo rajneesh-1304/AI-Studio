@@ -69,7 +69,6 @@
     gap: 16px;
 }
 
-/* User message */
 .message-user {
     display: flex;
     align-items: flex-start;
@@ -130,7 +129,6 @@
     }
 }
 
-/* Assistant message */
 .message-assistant {
     display: flex;
     align-items: flex-start;
@@ -241,7 +239,6 @@
     }
 }
 
-/* Generation status log */
 .status-log-bubble {
     border-radius: 16px;
     border-top-left-radius: 4px;
@@ -283,7 +280,6 @@
     }
 }
 
-/* No credits alert banner */
 .no-credits-alert {
     margin: 0 12px 8px;
     border-radius: 12px;
@@ -323,7 +319,6 @@
     }
 }
 
-/* Chat input footer */
 .chat-input-wrapper {
     border-top: 1px solid rgba(255, 255, 255, 0.06);
     padding: 12px;

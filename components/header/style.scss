@@ -1,10 +1,8 @@
-.navbar{
+.navbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 0 auto;
-    max-width: 80rem;
-    padding: 0rem 1rem;
+    padding: 0 1.5rem;
     height: 100%;
 }
 
@@ -13,18 +11,18 @@
     width: auto;
 }
 
-.navbar-right{
+.navbar-right {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.get-started-btn{
+.get-started-btn {
     display: inline-flex;
     height: 2rem;
     align-items: center;
     gap: 0.375rem;
-    padding: 0rem 1rem;
+    padding: 0 1rem;
     border-radius: 16px;
     background-color: #fff;
     color: #000;
@@ -41,7 +39,7 @@
   transform: scale(0.95);
 }
 
-.sign-in-btn .projects {
+.sign-in-btn, .projects {
   font-size: 13px;
   font-weight: 500;
   color: rgba(255, 255, 255, 0.5);
@@ -49,17 +47,17 @@
   transition: color 0.15s ease;
 }
 
-.sign-in-btn:hover .projects:hover {
+.sign-in-btn:hover, .projects:hover {
   color: rgba(255, 255, 255, 0.9);
   background-color: transparent;
 }
 
-.zap-icon{
+.zap-icon {
     height: 12px;
     width: 12px;
     fill: rgba(255, 255, 255, 0.7);
 }
 
-.credits{
+.credits {
 
 }

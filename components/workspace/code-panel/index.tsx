@@ -1,5 +1,3 @@
-// CodePanel.tsx
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -30,8 +28,6 @@ import type { FileData, StatusStep } from "@/types/workspace";
 import { PricingModal } from "@/components/common/pricing-modal";
 import "./style.scss";
 
-// ─── Placeholder ──────────────────────────────────────────────────────────────
-
 const PLACEHOLDER_FILES = {
   "/App.js": {
     code: `export default function App() {
@@ -53,8 +49,6 @@ const PLACEHOLDER_FILES = {
 }`,
   },
 };
-
-// ─── Base dependencies ────────────────────────────────────────────────────────
 
 const BASE_DEPENDENCIES: Record<string, string> = {
   "react-is": "latest",
@@ -78,8 +72,6 @@ const BASE_DEPENDENCIES: Record<string, string> = {
   "tailwind-merge": "latest",
 };
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type ActiveTab = "preview" | "code";
 
 interface CodePanelProps {
@@ -95,8 +87,6 @@ interface CodePanelProps {
   workspaceId: string | null;
   userId: string;
 }
-
-// ─── SandpackInner ────────────────────────────────────────────────────────────
 
 function SandpackInner({
   isGenerating,
@@ -143,7 +133,6 @@ function SandpackInner({
       }
     }
     prevFilesRef.current = fileData.files;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileData?.files]);
 
   useEffect(() => {
@@ -187,7 +176,6 @@ function SandpackInner({
     await onImprove(trimmed);
   };
 
-  // ── Export to ZIP ──────────────────────────────────────────────────────────
   const handleExportZip = async () => {
     if (isExporting) return;
     setIsExporting(true);
@@ -283,7 +271,6 @@ root.render(<React.StrictMode><App /></React.StrictMode>);`
     }
   };
 
-  // ── Export workspace as JSON ───────────────────────────────────────────────
   const handleExportWorkspace = async () => {
     if (isExportingWorkspace || !workspaceId) return;
     setIsExportingWorkspace(true);
@@ -322,7 +309,6 @@ root.render(<React.StrictMode><App /></React.StrictMode>);`
       onValueChange={(v) => setActiveTab(v as ActiveTab)}
       className="code-panel-tabs"
     >
-      {/* Tabs + Actions bar */}
       <div className="code-panel-toolbar">
         <TabsList variant="line" className="toolbar-tabs-list">
           <TabsTrigger className="toolbar-tab-trigger" value="code">
@@ -422,7 +408,6 @@ root.render(<React.StrictMode><App /></React.StrictMode>);`
         </div>
       </div>
 
-      {/* Content area */}
       <div className="code-panel-body">
         {(isGenerating || isImproving) && (
           <div className="loading-overlay">
@@ -471,7 +456,6 @@ root.render(<React.StrictMode><App /></React.StrictMode>);`
         </SandpackLayout>
       </div>
 
-      {/* Preview error banner */}
       {previewError &&
         !isGenerating &&
         !isImproving &&
@@ -495,8 +479,6 @@ root.render(<React.StrictMode><App /></React.StrictMode>);`
     </Tabs>
   );
 }
-
-// ─── CodePanel (outer) ────────────────────────────────────────────────────────
 
 export function CodePanel({
   fileData,
@@ -539,12 +521,12 @@ export function CodePanel({
     ...(fileData?.dependencies ?? {}),
   };
 
-  const filePathKey = Object.keys(files).sort().join("|");
+  const sandpackKey = `${workspaceId ?? "new"}-${fileData ? "loaded" : "placeholder"}-${Object.keys(files).sort().join("|")}`;
 
   return (
     <div className="code-panel">
       <SandpackProvider
-        key={filePathKey}
+        key={sandpackKey}
         template="react"
         theme={dracula}
         files={files}

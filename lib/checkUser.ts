@@ -11,7 +11,19 @@ const getCurrentPlan = async (): Promise<Plan> => {
 };
 
 export const checkUser = async () => {
-    const user = await currentUser();
+    let user = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+            user = await currentUser();
+            break;
+        } catch (err) {
+            if (attempt < 2) {
+                await new Promise((r) => setTimeout(r, 500 * (attempt + 1)));
+                continue;
+            }
+            throw err;
+        }
+    }
     if (!user) {
         return null;
     }

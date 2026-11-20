@@ -7,8 +7,6 @@ import { db } from "@/lib/prisma";
 import { checkUser } from "@/lib/checkUser";
 import { ProjectSummary } from "@/types/project";
 
-// ─── Get all workspaces for the current user ──────────────────────────────────
-
 export async function getUserProjects(): Promise<ProjectSummary[]> {
   const user = await checkUser();
   if (!user) redirect("/");
@@ -37,15 +35,13 @@ export async function getUserProjects(): Promise<ProjectSummary[]> {
     return {
       id: w.id,
       title: w.title,
-      firstPrompt: firstUserMsg?.content?.slice(0, 120) ?? null, // ← new
+      firstPrompt: firstUserMsg?.content?.slice(0, 120) ?? null,
       createdAt: w.createdAt,
       updatedAt: w.updatedAt,
       messageCount: Array.isArray(w.messages) ? w.messages.length : 0,
     };
   });
 }
-
-// ─── Import a workspace as a new project ──────────────────────────────────────
 
 export async function importWorkspace(fileContent: string): Promise<string> {
   const { userId: clerkId } = await auth();
@@ -82,8 +78,6 @@ export async function importWorkspace(fileContent: string): Promise<string> {
 
   return workspace.id;
 }
-
-// ─── Delete a workspace ───────────────────────────────────────────────────────
 
 export async function deleteProject(workspaceId: string): Promise<void> {
   const { userId: clerkId } = await auth();

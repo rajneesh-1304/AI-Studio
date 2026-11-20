@@ -1,4 +1,3 @@
-// WorkspaceClient.tsx
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
@@ -66,11 +65,9 @@ export function WorkspaceClient({
   const [statusLog, setStatusLog] = useState<StatusStep[]>([]);
   const [isImproving, setIsImproving] = useState(false);
 
-  // AbortController refs — used to cancel in-flight streams
   const generateAbortRef = useRef<AbortController | null>(null);
   const improveAbortRef = useRef<AbortController | null>(null);
 
-  // Refs to avoid stale closures in callbacks
   const messagesRef = useRef<Message[]>(messages);
   useEffect(() => {
     messagesRef.current = messages;
@@ -81,8 +78,6 @@ export function WorkspaceClient({
     workspaceIdRef.current = workspaceId;
   }, [workspaceId]);
 
-  // fileData ref — so handleImprove never closes over stale fileData
-  // even as file_patch events stream in
   const fileDataRef = useRef<FileData | null>(fileData);
   useEffect(() => {
     fileDataRef.current = fileData;
@@ -123,7 +118,6 @@ export function WorkspaceClient({
       setIsGenerating(true);
       setStatusLog([{ label: "Thinking…", status: "running" }]);
 
-      // Create a fresh AbortController for this request
       const abortController = new AbortController();
       generateAbortRef.current = abortController;
 
@@ -156,6 +150,7 @@ export function WorkspaceClient({
         const reader = res.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
+        let receivedDone = false;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -172,6 +167,7 @@ export function WorkspaceClient({
               if (event.type === "status") {
                 pushStep(event.message);
               } else if (event.type === "done") {
+                receivedDone = true;
                 completeSteps();
                 setWorkspaceId(event.workspaceId);
                 setFileData(event.fileData);
@@ -186,15 +182,20 @@ export function WorkspaceClient({
                   `/workspace?id=${event.workspaceId}`
                 );
               } else if (event.type === "error") {
-                throw new Error(event.message);
+                toast.error(event.message);
+                setMessages((prev) => prev.slice(0, -1));
+                return;
               }
             } catch {
-              // skip malformed SSE lines
             }
           }
         }
+
+        if (!receivedDone) {
+          toast.error("Generation ended unexpectedly. Please try again.");
+          setMessages((prev) => prev.slice(0, -1));
+        }
       } catch (err) {
-        // User-initiated stop — silently roll back the user message
         if (err instanceof Error && err.name === "AbortError") {
           setMessages((prev) => prev.slice(0, -1));
           return;
@@ -210,9 +211,7 @@ export function WorkspaceClient({
         setStatusLog([]);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [credits, isGenerating, userId]
-    // fileData intentionally omitted — read via fileDataRef
   );
 
   const handleImprove = useCallback(
@@ -221,7 +220,6 @@ export function WorkspaceClient({
       if (credits < MIN_CREDITS_TO_GENERATE) return;
       if (!workspaceIdRef.current) return;
 
-      // Read fileData from ref — never stale, never causes recreating this fn
       const currentFileData = fileDataRef.current;
       if (!currentFileData) return;
 
@@ -230,10 +228,9 @@ export function WorkspaceClient({
       setMessages((prev) => [
         ...prev,
         { role: "user", content: userRequest },
-        { role: "assistant", content: "" }, // placeholder, updated live
+        { role: "assistant", content: "" },
       ]);
 
-      // Create a fresh AbortController for this request
       const abortController = new AbortController();
       improveAbortRef.current = abortController;
 
@@ -269,9 +266,6 @@ export function WorkspaceClient({
         let buffer = "";
         let accumulatedThinking = "";
 
-        // Accumulate patches locally — only apply to state at done.
-        // Applying on every file_patch event would update fileData state,
-        // which feeds into SandpackProvider and can cause remounts mid-stream.
         const localPatches: Record<string, { code: string }> = {};
 
         while (true) {
@@ -288,7 +282,6 @@ export function WorkspaceClient({
               const event = JSON.parse(line.slice(6));
 
               if (event.type === "thinking") {
-                // Stream agent reasoning into the placeholder assistant message
                 accumulatedThinking += event.text;
                 setMessages((prev) => {
                   const updated = [...prev];
@@ -299,13 +292,10 @@ export function WorkspaceClient({
                   return updated;
                 });
               } else if (event.type === "file_patch") {
-                // Accumulate locally — don't touch state yet
                 localPatches[event.path] = { code: event.code };
               } else if (event.type === "done") {
-                // Apply all patches at once now that the stream is complete
                 setFileData(event.fileData);
                 setCredits(event.creditsRemaining);
-                // Replace thinking text with clean summary
                 setMessages((prev) => {
                   const updated = [...prev];
                   updated[updated.length - 1] = {
@@ -315,15 +305,15 @@ export function WorkspaceClient({
                   return updated;
                 });
               } else if (event.type === "error") {
-                throw new Error(event.message);
+                toast.error(event.message);
+                setMessages((prev) => prev.slice(0, -2));
+                return;
               }
             } catch {
-              // skip malformed SSE lines
             }
           }
         }
       } catch (err) {
-        // User-initiated stop — silently roll back the user + placeholder messages
         if (err instanceof Error && err.name === "AbortError") {
           setMessages((prev) => prev.slice(0, -2));
           return;
@@ -335,12 +325,9 @@ export function WorkspaceClient({
         setIsImproving(false);
       }
     },
-    // fileData intentionally omitted — read via fileDataRef above
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [credits, isGenerating, isImproving, userId]
   );
 
-  // Cancel whichever stream is currently in-flight
   const handleStop = useCallback(() => {
     generateAbortRef.current?.abort();
     improveAbortRef.current?.abort();

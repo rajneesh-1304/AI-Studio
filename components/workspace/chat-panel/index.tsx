@@ -119,7 +119,6 @@ export function ChatPanel({
         .getPublicUrl(path);
       setPendingImageUrl(data.publicUrl);
     } catch {
-      // silent
     } finally {
       setIsUploading(false);
       if (fileRef.current) fileRef.current.value = "";
@@ -133,7 +132,6 @@ export function ChatPanel({
 
   return (
     <div className="chat-panel">
-      {/* Header */}
       <div className="chat-header">
         <BlueTitle>{appTitle}</BlueTitle>
         <PricingModal reason={noCredits ? "credits" : "upgrade"}>
@@ -147,7 +145,6 @@ export function ChatPanel({
         </PricingModal>
       </div>
 
-      {/* Messages */}
       <div ref={scrollContainerRef} className="chat-messages-container">
         {messages.length === 0 && !isGenerating && (
           <div className="chat-empty-state">
@@ -166,8 +163,7 @@ export function ChatPanel({
                   <div className="message-user">
                     <div className="user-bubble">
                       {msg.imageUrl && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                          <img
                           src={msg.imageUrl}
                           alt="uploaded"
                           className="user-image"
@@ -178,7 +174,6 @@ export function ChatPanel({
                       </div>
                     </div>
                     {user?.imageUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={user.imageUrl}
                         alt={user.fullName ?? "You"}
@@ -193,7 +188,7 @@ export function ChatPanel({
                 ) : (
                   <div className="message-assistant">
                     <Image
-                      src="/logo-short.jpeg"
+                      src="/header-logo.jpeg"
                       alt="Forge"
                       width={24}
                       height={24}
@@ -228,11 +223,10 @@ export function ChatPanel({
             );
           })}
 
-          {/* Live status steps */}
           {isGenerating && (
             <div className="message-assistant">
               <Image
-                src="/logo-short.jpeg"
+                src="/header-logo.jpeg"
                 alt="Forge"
                 width={24}
                 height={24}
@@ -277,7 +271,6 @@ export function ChatPanel({
         </div>
       </div>
 
-      {/* No-credits alert banner */}
       {noCredits && (
         <div className="no-credits-alert">
           <p className="alert-text">You&apos;ve used all your credits</p>
@@ -290,11 +283,9 @@ export function ChatPanel({
         </div>
       )}
 
-      {/* Input */}
       <div className="chat-input-wrapper">
         {pendingImageUrl && (
           <div className="image-preview">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={pendingImageUrl}
               alt="pending upload"
