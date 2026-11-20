@@ -1,6 +1,12 @@
 import { SignUp } from "@clerk/nextjs";
-import React from "react";
+import React, { Suspense } from "react";
+
+export const instant = false;
 
 export default function Page() {
-  return <SignUp />;
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <SignUp />
+    </Suspense>
+  );
 }
