@@ -170,7 +170,9 @@ export function ChatPanel({
                         />
                       )}
                       <div className="user-text-box">
-                        <p className="user-text">{msg.content}</p>
+                        <div className="user-markdown">
+                          <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        </div>
                       </div>
                     </div>
                     {user?.imageUrl ? (

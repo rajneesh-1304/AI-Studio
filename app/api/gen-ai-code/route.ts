@@ -21,6 +21,45 @@ function sseEvent(type: string, payload: unknown): string {
   return `data: ${JSON.stringify({ type, ...(payload as object) })}\n\n`;
 }
 
+function sanitizeControlCharsInStrings(raw: string): string {
+  let result = "";
+  let inString = false;
+  let isEscaped = false;
+
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+
+    if (inString) {
+      if (isEscaped) {
+        result += ch;
+        isEscaped = false;
+      } else if (ch === "\\") {
+        result += ch;
+        isEscaped = true;
+      } else if (ch === '"') {
+        result += ch;
+        inString = false;
+      } else if (ch === "\n") {
+        result += "\\n";
+      } else if (ch === "\r") {
+        result += "\\r";
+      } else if (ch === "\t") {
+        result += "\\t";
+      } else if (ch.charCodeAt(0) < 32) {
+      } else {
+        result += ch;
+      }
+    } else {
+      if (ch === '"') {
+        inString = true;
+      }
+      result += ch;
+    }
+  }
+
+  return result;
+}
+
 function cleanAndParseJson<T>(raw: string): T {
   let text = raw.trim();
 
@@ -34,21 +73,15 @@ function cleanAndParseJson<T>(raw: string): T {
     text = text.slice(firstBrace, lastBrace + 1);
   }
 
-  text = text.replace(/[\x00-\x1F\x7F]/g, (ch) => {
-    if (ch === "\n") return "\\n";
-    if (ch === "\r") return "\\r";
-    if (ch === "\t") return "\\t";
-    return "";
-  });
-
   try {
     return JSON.parse(text) as T;
-  } catch (err) {
-    const sanitized = text.replace(/,\s*([}\]])/g, "$1");
+  } catch {
+    const sanitized = sanitizeControlCharsInStrings(text);
     try {
       return JSON.parse(sanitized) as T;
     } catch {
-      throw err;
+      const withoutTrailingCommas = sanitized.replace(/,\s*([}\]])/g, "$1");
+      return JSON.parse(withoutTrailingCommas) as T;
     }
   }
 }
@@ -110,7 +143,16 @@ RULES:
 7. Do not include react, react-dom, or tailwindcss in "dependencies" — they are always available.
 8. When modifying existing code, include ALL files (both changed and unchanged) in "files".
 9. Keep code clean, readable, and production-quality.
-10. If the user attaches an image, use it as a design reference and match the layout/style as closely as possible.`;
+10. If the user attaches an image, use it as a design reference and match the layout/style as closely as possible.
+11. If storing mock code or markdown strings inside JavaScript (e.g. sample bot messages, markdown templates), NEVER use unescaped nested backticks or unescaped \${} inside template literals. Always escape nested backticks (\`) and \${} or use standard strings with \\n so that Babel can parse the file without syntax errors.
+12. All files in "files" must be 100% syntactically valid JavaScript. Always ensure all brackets, parentheses, and template literals are properly closed.
+13. FULL-HEIGHT APPLICATION LAYOUT: The root container in /App.js must always be a full-height, full-width application (e.g. 'h-screen flex overflow-hidden' or 'h-screen flex flex-col overflow-hidden'). Never produce half-empty screens, miniature widgets, or large blank voids. For chat applications or dashboard layouts:
+- The sidebar must stretch full height ('h-full flex flex-col') containing a top brand header and 'New Chat' action, a search input, a scrollable list of 4-6 recent chat sessions, and a pinned bottom user profile and settings bar.
+- The main chat area must occupy all remaining space ('flex-1 flex flex-col h-full overflow-hidden').
+- The message history feed must be scrollable and fill the available space ('flex-1 overflow-y-auto p-4 space-y-4').
+- The message input bar must be pinned to the bottom ('p-4 border-t border-zinc-800 bg-zinc-900/50').
+14. RICH PRE-POPULATED DATA: Never initialize applications with an empty state or blank screen. Always pre-populate state with rich, realistic mock data so the preview looks complete and production-ready on initial load. For chat applications, provide 4-6 past conversation threads in the sidebar and an active conversation containing 2-3 realistic message exchanges between user and AI with formatted text, bullet points, and code snippets with copy button.
+15. WORKING INTERACTIONS: Ensure interactive controls function properly: typing and sending a message appends to the conversation and triggers a simulated AI response; clicking sidebar threads switches chats; clicking prompt suggestion chips populates the input; toggles and modal buttons respond to clicks.`;
 
 function buildContents(messages: Message[], fileData: FileData | null) {
   const trimmed = trimHistory(messages);
@@ -276,7 +318,11 @@ export async function POST(request: NextRequest) {
                 }
               }
 
-              if (accumulated.trim().length > 0) {
+              const hasClosingBrace =
+                accumulated.lastIndexOf("}") > accumulated.indexOf("{");
+              const hasFilesKey = accumulated.includes('"files"');
+
+              if (hasClosingBrace && hasFilesKey) {
                 generationSucceeded = true;
                 break;
               }

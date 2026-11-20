@@ -39,7 +39,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         lang="en" suppressHydrationWarning
       >
         <body
-          className={`font-sans ${loraFont.variable} ${dmSansFont.variable}}`}
+          className={`font-sans ${loraFont.variable} ${dmSansFont.variable}`}
         >
           <ThemeProvider
             attribute="class"

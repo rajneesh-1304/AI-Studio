@@ -5,13 +5,29 @@
     overflow: hidden;
     background-color: #0a0a0a;
     height: 100%;
+    min-height: 0;
+
+    .sp-wrapper {
+        height: 100% !important;
+        min-height: 0 !important;
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+}
+
+.code-panel-inner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background-color: #0a0a0a;
 }
 
 .code-panel-tabs {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    gap: 0;
+    display: none;
 }
 
 .code-panel-toolbar {
@@ -21,20 +37,37 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     padding: 0 12px;
     height: 42px;
+    min-height: 42px;
     flex-shrink: 0;
+    background-color: #0a0a0a;
+    box-sizing: border-box;
+    z-index: 10;
+    position: relative;
+}
+
+.toolbar-tabs-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
 }
 
 .toolbar-tabs-list {
-    height: auto;
+    display: none;
+}
+
+.toolbar-tabs-row {
+    display: flex;
+    align-items: stretch;
     gap: 0;
-    border-radius: 0;
-    background: transparent;
-    padding: 0;
+    height: 100%;
 
     .toolbar-tab-trigger {
+        height: 100%;
         border-bottom: 2px solid transparent;
-        padding-top: 8px;
-        padding-bottom: 8px;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        padding: 0 12px;
         display: flex;
         align-items: center;
         gap: 6px;
@@ -42,10 +75,16 @@
         color: rgba(255, 255, 255, 0.5);
         background: transparent;
         border-radius: 0;
+        cursor: pointer;
+        transition: color 0.15s ease, border-color 0.15s ease;
 
-        &[data-state="active"] {
+        &.active {
             color: #ffffff;
             border-bottom-color: #3b82f6;
+        }
+
+        &:hover:not(.active) {
+            color: rgba(255, 255, 255, 0.8);
         }
 
         svg {
@@ -211,8 +250,57 @@
 .code-panel-body {
     position: relative;
     flex: 1;
+    min-height: 0;
     overflow: hidden;
-    height: 100%;
+    height: calc(100% - 42px);
+
+    .sp-wrapper {
+        height: 100% !important;
+        min-height: 0 !important;
+    }
+
+    .sp-layout {
+        height: 100% !important;
+        min-height: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        flex-direction: column !important;
+    }
+
+    .sandpack-preview-pane,
+    .sandpack-code-pane {
+        position: absolute;
+        inset: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .sandpack-preview-pane {
+        display: flex;
+        flex-direction: column;
+
+        .sp-preview,
+        .sp-stack,
+        .sp-preview-container,
+        .sp-preview-iframe {
+            height: 100% !important;
+            min-height: 0 !important;
+            width: 100% !important;
+            flex: 1 !important;
+        }
+    }
+
+    .sandpack-code-pane {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+
+        .sp-file-explorer,
+        .sp-code-editor {
+            height: 100% !important;
+        }
+    }
 }
 
 .loading-overlay {

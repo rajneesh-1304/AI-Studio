@@ -22,7 +22,6 @@ import {
 import { RingLoader } from "react-spinners";
 import JSZip from "jszip";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { exportWorkspace } from "@/actions/workspace";
 import type { FileData, StatusStep } from "@/types/workspace";
 import { PricingModal } from "@/components/common/pricing-modal";
@@ -137,24 +136,38 @@ function SandpackInner({
 
   useEffect(() => {
     unsubscribeRef.current = listen((msg: any) => {
+      const extractMessage = (input: unknown): string => {
+        if (!input) return "An error occurred in the preview.";
+        let raw = "";
+        if (typeof input === "string") {
+          raw = input;
+        } else if (typeof input === "object") {
+          const obj = input as Record<string, unknown>;
+          if (typeof obj.message === "string") raw = obj.message;
+          else if (typeof obj.title === "string") raw = obj.title;
+          else if (obj.error && typeof (obj.error as Record<string, unknown>).message === "string") {
+            raw = (obj.error as Record<string, unknown>).message as string;
+          } else {
+            raw = String(input);
+          }
+        } else {
+          raw = String(input);
+        }
+        return raw
+          .replace(/^Cannot assign to read only property 'message' of object '([\s\S]*)'$/, "$1")
+          .trim();
+      };
+
       if (
         msg.type === "action" &&
         "action" in msg &&
         msg.action === "show-error"
       ) {
-        const errMsg =
-          "message" in msg && typeof msg.message === "string"
-            ? msg.message
-            : "An error occurred in the preview.";
-        setPreviewError(errMsg);
+        setPreviewError(extractMessage(msg.message ?? msg));
         return;
       }
       if (msg.type === "compile") {
-        const errMsg =
-          "message" in msg && typeof msg.message === "string"
-            ? msg.message
-            : "Compile error in preview.";
-        setPreviewError(errMsg);
+        setPreviewError(extractMessage(msg.message ?? msg));
         return;
       }
       if (msg.type === "success") {
@@ -304,22 +317,24 @@ root.render(<React.StrictMode><App /></React.StrictMode>);`
     statusLog[statusLog.length - 1]?.label ?? "Generating…";
 
   return (
-    <Tabs
-      value={activeTab}
-      onValueChange={(v) => setActiveTab(v as ActiveTab)}
-      className="code-panel-tabs"
-    >
+    <div className="code-panel-inner">
       <div className="code-panel-toolbar">
-        <TabsList variant="line" className="toolbar-tabs-list">
-          <TabsTrigger className="toolbar-tab-trigger" value="code">
+        <div className="toolbar-tabs-row">
+          <button
+            className={`toolbar-tab-trigger${activeTab === "code" ? " active" : ""}`}
+            onClick={() => setActiveTab("code")}
+          >
             <Code2 />
             Code
-          </TabsTrigger>
-          <TabsTrigger className="toolbar-tab-trigger" value="preview">
+          </button>
+          <button
+            className={`toolbar-tab-trigger${activeTab === "preview" ? " active" : ""}`}
+            onClick={() => setActiveTab("preview")}
+          >
             <Eye />
             Preview
-          </TabsTrigger>
-        </TabsList>
+          </button>
+        </div>
 
         <div className="toolbar-actions">
           {isProUser ? (
@@ -421,62 +436,62 @@ root.render(<React.StrictMode><App /></React.StrictMode>);`
           </div>
         )}
 
-        <SandpackLayout
-          style={{
-            height: "100%",
-            border: "none",
-            borderRadius: 0,
-            background: "transparent",
-          }}
-        >
-          <TabsContent value="preview" keepMounted className="mt-0 h-full w-full">
+        <SandpackLayout style={{ height: "100%", border: "none", borderRadius: 0, background: "transparent", flexDirection: "column" }}>
+          <div
+            className="sandpack-preview-pane"
+            style={{ display: activeTab === "preview" ? "flex" : "none" }}
+          >
             <SandpackPreview
-              style={{ height: "100%" }}
+              style={{ height: "100%", width: "100%" }}
               showOpenInCodeSandbox={false}
             />
-          </TabsContent>
+          </div>
 
-          <TabsContent value="code" keepMounted className="mt-0 flex h-full w-full">
+          <div
+            className="sandpack-code-pane"
+            style={{ display: activeTab === "code" ? "flex" : "none" }}
+          >
             <SandpackFileExplorer
               style={{
                 height: "100%",
                 width: "180px",
+                flexShrink: 0,
                 borderRight: "0.5px solid rgba(255,255,255,0.08)",
               }}
             />
             <SandpackCodeEditor
-              style={{ height: "100%", flex: 1 }}
+              style={{ height: "100%", flex: 1, minWidth: 0 }}
               showTabs
               showLineNumbers
               showInlineErrors
               closableTabs
               readOnly
             />
-          </TabsContent>
-        </SandpackLayout>
-      </div>
-
-      {previewError &&
-        !isGenerating &&
-        !isImproving &&
-        activeTab === "preview" && (
-          <div className="preview-error-bar">
-            <AlertTriangle className="error-icon" />
-            <div className="error-content">
-              <p className="error-title">Preview error</p>
-              <p className="error-message">{previewError}</p>
-            </div>
-            <Button
-              onClick={() => onFixError(previewError)}
-              variant="destructive"
-              className="fix-btn"
-            >
-              <Bot className="h-3 w-3" />
-              Fix with AI
-            </Button>
           </div>
-        )}
-    </Tabs>
+        </SandpackLayout>
+
+        {previewError &&
+          !isGenerating &&
+          !isImproving &&
+          activeTab === "preview" && (
+            <div className="preview-error-bar">
+              <AlertTriangle className="error-icon" />
+              <div className="error-content">
+                <p className="error-title">Preview error</p>
+                <p className="error-message">{previewError}</p>
+              </div>
+              <Button
+                onClick={() => onFixError(previewError)}
+                variant="destructive"
+                className="fix-btn"
+              >
+                <Bot className="h-3 w-3" />
+                Fix with AI
+              </Button>
+            </div>
+          )}
+      </div>
+    </div>
   );
 }
 
@@ -515,7 +530,27 @@ export function CodePanel({
     );
   }
 
-  const files = fileData?.files ?? PLACEHOLDER_FILES;
+  const rawFiles = (fileData?.files ?? PLACEHOLDER_FILES) as Record<string, { code: string; hidden?: boolean }>;
+  const files: Record<string, { code: string; hidden?: boolean }> = {
+    ...rawFiles,
+    "/styles.css": {
+      code: `html, body, #root {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #ededed;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+${rawFiles["/styles.css"]?.code ? `\n${rawFiles["/styles.css"].code}` : ""}`,
+      hidden: !rawFiles["/styles.css"],
+    },
+  };
   const dependencies = {
     ...BASE_DEPENDENCIES,
     ...(fileData?.dependencies ?? {}),
@@ -535,6 +570,14 @@ export function CodePanel({
           externalResources: ["https://cdn.tailwindcss.com"],
           recompileMode: "delayed",
           recompileDelay: 500,
+        }}
+        style={{
+          height: "100%",
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          flex: 1,
+          minHeight: 0,
         }}
       >
         <SandpackInner

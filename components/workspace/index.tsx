@@ -83,6 +83,29 @@ export function WorkspaceClient({
     fileDataRef.current = fileData;
   }, [fileData]);
 
+  useEffect(() => {
+    if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+    const prev = document.body.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+
+    const handleScroll = () => {
+      if (window.scrollY !== 0 || window.scrollX !== 0) {
+        window.scrollTo(0, 0);
+      }
+    };
+    window.addEventListener("scroll", handleScroll, { passive: false });
+
+    return () => {
+      document.documentElement.style.overflow = prev;
+      document.body.style.overflow = prev;
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const pushStep = (label: string) => {
     setStatusLog((prev) => [
       ...prev.map((s, i) =>
@@ -338,12 +361,31 @@ export function WorkspaceClient({
   }, []);
 
   return (
-    <div className="workspace-container">
+    <div
+      className="workspace-container fixed top-16 left-0 right-0 bottom-0 w-full h-[calc(100vh-4rem)] overflow-hidden bg-[#0a0a0a]"
+      style={{
+        position: "fixed",
+        top: "4rem",
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: "100%",
+        height: "calc(100vh - 4rem)",
+        overflow: "hidden",
+      }}
+    >
       <div className="workspace-mobile-view">
         <MobileBlocker />
       </div>
 
-      <div className="workspace-desktop-view">
+      <div
+        className="workspace-desktop-view"
+        style={{
+          height: "100%",
+          width: "100%",
+          overflow: "hidden",
+        }}
+      >
         <ChatPanel
           isImproving={isImproving}
           messages={messages}
@@ -363,11 +405,17 @@ export function WorkspaceClient({
           isGenerating={isGenerating}
           statusLog={statusLog}
           onImprove={handleImprove}
-          onFixError={(error) =>
-            handleGenerate(
-              `There is an error in the preview:\n\n\`\`\`\n${error}\n\`\`\`\n\nPlease fix it.`
-            )
-          }
+          onFixError={async (error) => {
+            const cleanError = error
+              .replace(
+                /^Cannot assign to read only property 'message' of object '([\s\S]*)'$/,
+                "$1"
+              )
+              .trim();
+            await handleGenerate(
+              `There is a syntax error in the code:\n\n\`\`\`\n${cleanError}\n\`\`\`\n\nPlease fix this syntax error so the app compiles cleanly.`
+            );
+          }}
           onFilePatch={handleFilePatch}
           appTitle={fileData?.title ?? workspace?.title ?? null}
           isImproving={isImproving}

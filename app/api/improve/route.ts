@@ -135,7 +135,9 @@ RULES:
 - Always write complete file contents — never partial snippets.
 - Keep all existing functionality unless asked to remove it.
 - The entry point is always /App.js with a default export.
-- All imports must reference files you've updated or packages in the available list above.`,
+- All imports must reference files you've updated or packages in the available list above.
+- Layouts must be full-height ('h-screen flex overflow-hidden') without empty voids or half-page screens.
+- Never strip out realistic mock state or past conversations; keep the application rich, populated, and fully functional.`,
         tools: [updateFileTool, doneImprovingTool],
         toolPolicies: {
           update_file: { autoApprove: true },

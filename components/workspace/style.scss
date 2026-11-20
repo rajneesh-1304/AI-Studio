@@ -1,16 +1,25 @@
 .workspace-container {
-    width: 100%;
-    padding-top: 4rem;
+    position: fixed !important;
+    top: 4rem !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: calc(100vh - 4rem) !important;
+    overflow: hidden !important;
+    background-color: #0a0a0a !important;
 }
 
 .workspace-mobile-view {
     display: block;
+    height: 100%;
 }
 
 .workspace-desktop-view {
     display: none;
-    height: calc(100vh - 4rem);
-    overflow: hidden;
+    height: 100% !important;
+    width: 100% !important;
+    overflow: hidden !important;
     background-color: #0a0a0a;
 }
 
